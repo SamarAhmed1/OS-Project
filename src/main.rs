@@ -1,5 +1,7 @@
 mod parser;
+mod proc_reader;
 
+use proc_reader::get_process_metrics;
 use parser::{Command, CommandParser};
 use std::io::{self, Write};
 
@@ -30,8 +32,10 @@ fn main() {
                 // TODO: Implement actual process killing
             }
             Command::ProcessInfo { pid, detailed } => {
-                println!("Showing info for PID {} (detailed: {})", pid, detailed);
-                // TODO: Implement actual process info
+                match get_process_metrics(pid) {
+                    Ok(metrics) => println!("{:?}", metrics),
+                    Err(e) => println!("Error reading process metrics: {}", e),
+                }
             }
             Command::SystemStats { refresh_interval } => {
                 println!("Showing system stats (refresh: {:?})", refresh_interval);
